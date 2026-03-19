@@ -28,4 +28,5 @@ fun Pantalla1Screen(navigateToSecondScreen: () -> Unit) {
             Text(text = "Next Screen")
         }
     }
+    //añlkfj
 }
