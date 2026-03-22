@@ -13,26 +13,22 @@ class GameViewModel : ViewModel() {
     private var preguntasDeLaPartida: List<Pregunta> = emptyList()
     val preguntasTotales = 10
 
-    //Variables
-
-    //PreguntaActual
     private val _preguntaActual = MutableStateFlow<Pregunta?>(null)
     val preguntaActual: StateFlow<Pregunta?> = _preguntaActual.asStateFlow()
 
-    // En qué número de pregunta estamos (1 de 10)
+    private val _opcionesMezcladas = MutableStateFlow<List<String>>(emptyList())
+    val opcionesMezcladas: StateFlow<List<String>> = _opcionesMezcladas.asStateFlow()
+
     private val _numPregunta = MutableStateFlow(1)
     val numPregunta: StateFlow<Int> = _numPregunta.asStateFlow()
 
-    // Cuántas ha acertado
     private val _puntuacion = MutableStateFlow(0)
     val puntuacion: StateFlow<Int> = _puntuacion.asStateFlow()
 
-    // Si el juego ha terminado (para cambiar de pantalla)
     private val _juegoTerminado = MutableStateFlow(false)
     val juegoTerminado: StateFlow<Boolean> = _juegoTerminado.asStateFlow()
 
     init {
-        // Por defecto empezamos una partida en dificultad fácil (1)
         iniciarPartida(dificultad = 1)
     }
 
@@ -41,11 +37,36 @@ class GameViewModel : ViewModel() {
         _puntuacion.value = 0
         _numPregunta.value = 1
         _juegoTerminado.value = false
-        _preguntaActual.value = preguntasDeLaPartida[_numPregunta.value - 1]
+
+        cargarPreguntaEnPantalla()
     }
 
-    fun siguientePregunta() {
-        _numPregunta.value += 1
-        _preguntaActual.value = preguntasDeLaPartida[_numPregunta.value - 1]
+    private fun cargarPreguntaEnPantalla() {
+        val indice = _numPregunta.value - 1
+
+        // Comprobamos que no nos hayamos pasado del límite de preguntas
+        if (indice < preguntasTotales) {
+            val nuevaPregunta = preguntasDeLaPartida[indice]
+            _preguntaActual.value = nuevaPregunta
+            // Barajamos las opciones para que la correcta no sea siempre la primera
+            _opcionesMezcladas.value = nuevaPregunta.options.shuffled()
+        } else {
+            // Si nos pasamos, el juego termina
+            _juegoTerminado.value = true
+        }
+    }
+
+    fun comprobarRespuesta(respuestaSeleccionada: String) {
+        val pregunta = _preguntaActual.value
+        if (pregunta != null) {
+            val respuestaCorrecta = pregunta.options[0] // Sabemos que en Data la 0 es la buena
+
+            if (respuestaSeleccionada == respuestaCorrecta) {
+                _puntuacion.value += 1
+            }
+
+            _numPregunta.value += 1
+            cargarPreguntaEnPantalla()
+        }
     }
 }

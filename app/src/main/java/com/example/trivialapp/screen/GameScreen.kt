@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,14 +24,23 @@ import com.example.trivialapp.data.Pregunta
 fun GameScreen(difficulty: String, navigateToResultScreen: (score: Int) -> Unit) {
 
     val gameViewModel = viewModel<GameViewModel>()
+
     val pregunta: Pregunta? by gameViewModel.preguntaActual.collectAsStateWithLifecycle()
     val numPregunta: Int by gameViewModel.numPregunta.collectAsStateWithLifecycle()
-//    val studentCourse: String by gameViewModel.studentCourse.collectAsStateWithLifecycle()
-//    val studentGrade: String by gameViewModel.studentGrade.collectAsStateWithLifecycle()
+    val puntuacion: Int by gameViewModel.puntuacion.collectAsStateWithLifecycle()
+    val opciones: List<String> by gameViewModel.opcionesMezcladas.collectAsStateWithLifecycle()
+    val juegoTerminado: Boolean by gameViewModel.juegoTerminado.collectAsStateWithLifecycle()
+
+    LaunchedEffect(juegoTerminado) {
+        if (juegoTerminado) {
+            navigateToResultScreen(puntuacion)
+        }
+    }
 
     Column(
         Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
 
         Text(
@@ -40,12 +49,12 @@ fun GameScreen(difficulty: String, navigateToResultScreen: (score: Int) -> Unit)
         )
 
         Text(
-            text = "$numPregunta /10", fontSize = 24.sp,
+            text = "$numPregunta / 10", fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            text = "Score: ", fontSize = 24.sp,
+            text = "Score: $puntuacion", fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 
@@ -58,25 +67,12 @@ fun GameScreen(difficulty: String, navigateToResultScreen: (score: Int) -> Unit)
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        Button(onClick = {}) {
-            Text(text = pregunta!!.options[0])
-        }
-
-        Button(onClick = {}) {
-            Text(text = pregunta!!.options[1])
-        }
-
-        Button(onClick = {}) {
-            Text(text = pregunta!!.options[2])
-        }
-
-        Button(onClick = {}) {
-            Text(text = pregunta!!.options[3])
-        }
-
-//        TextField(value = score, onValueChange = { score = it })
-        Button(onClick = { gameViewModel.siguientePregunta() }) {
-            Text(text = "Next question")
+        opciones.forEach { textoOpcion ->
+            Button(onClick = {
+                gameViewModel.comprobarRespuesta(textoOpcion)
+            }) {
+                Text(text = textoOpcion)
+            }
         }
     }
 }
