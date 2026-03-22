@@ -1,0 +1,82 @@
+package com.example.trivialapp.screen
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.trivialapp.data.Pregunta
+
+@Composable
+fun GameScreen(difficulty: String, navigateToResultScreen: (score: Int) -> Unit) {
+
+    val gameViewModel = viewModel<GameViewModel>()
+    val pregunta: Pregunta? by gameViewModel.preguntaActual.collectAsStateWithLifecycle()
+    val numPregunta: Int by gameViewModel.numPregunta.collectAsStateWithLifecycle()
+//    val studentCourse: String by gameViewModel.studentCourse.collectAsStateWithLifecycle()
+//    val studentGrade: String by gameViewModel.studentGrade.collectAsStateWithLifecycle()
+
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
+    ) {
+
+        Text(
+            text = "Dificulty: $difficulty", fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = "$numPregunta /10", fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = "Score: ", fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(60.dp))
+
+        Text(
+            text = pregunta!!.text, fontSize = 24.sp,
+            textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(60.dp))
+
+        Button(onClick = {}) {
+            Text(text = pregunta!!.options[0])
+        }
+
+        Button(onClick = {}) {
+            Text(text = pregunta!!.options[1])
+        }
+
+        Button(onClick = {}) {
+            Text(text = pregunta!!.options[2])
+        }
+
+        Button(onClick = {}) {
+            Text(text = pregunta!!.options[3])
+        }
+
+//        TextField(value = score, onValueChange = { score = it })
+        Button(onClick = { gameViewModel.siguientePregunta() }) {
+            Text(text = "Next question")
+        }
+    }
+}

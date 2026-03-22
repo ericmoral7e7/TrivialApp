@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 
 sealed class Routes: NavKey {
     @Serializable
-    data object Pantalla1: Routes() // Objects quan no passem paràmetres
+    data object MenuScreen: Routes() // Objects quan no passem paràmetres
     @Serializable
-    data object Pantalla2: Routes()
+    data class GameScreen(val dificulty: String): Routes() // Class quan passem paràmetres
     @Serializable
-    data class Pantalla3(val name: String): Routes() // Class quan passem paràmetres
+    data class ResultScreen(val score: Int): Routes() // Class quan passem paràmetres
 }

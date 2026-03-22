@@ -4,27 +4,31 @@ import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.example.trivialapp.screen.Pantalla1Screen
-import com.example.trivialapp.screen.Pantalla2Screen
-import com.example.trivialapp.screen.Pantalla3Screen
+import com.example.trivialapp.screen.MenuScreen
+import com.example.trivialapp.screen.GameScreen
+import com.example.trivialapp.screen.ResultScreen
 
 @Composable
-fun NavigationWrapper(){
-    val backStack = rememberNavBackStack(Routes.Pantalla1)
+fun NavigationWrapper() {
+    val backStack = rememberNavBackStack(Routes.MenuScreen)
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
-            entry<Routes.Pantalla1> {
-                Pantalla1Screen { backStack.add(Routes.Pantalla2) }
+            entry<Routes.MenuScreen> {
+                MenuScreen { difficulty -> backStack.add(Routes.GameScreen(difficulty)) }
             }
-            entry<Routes.Pantalla2> {
-                Pantalla2Screen { name -> backStack.add(Routes.Pantalla3(name)) }
+
+            entry<Routes.GameScreen> { key ->
+                GameScreen(difficulty = key.dificulty) { score ->
+                    backStack.add(Routes.ResultScreen(score))
+                }
             }
-            entry<Routes.Pantalla3> { key->
-                Pantalla3Screen(key.name) {
+
+            entry<Routes.ResultScreen> { key ->
+                ResultScreen(score = key.score) {
                     backStack.clear()
-                    backStack.add(Routes.Pantalla1)
+                    backStack.add(Routes.MenuScreen)
                 }
             }
         }
