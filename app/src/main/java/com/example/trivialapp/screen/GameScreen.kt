@@ -21,19 +21,24 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.trivialapp.data.Pregunta
 
 @Composable
-fun GameScreen(difficulty: String, navigateToResultScreen: (score: Int) -> Unit) {
+fun GameScreen(difficulty: Int, navigateToResultScreen: (score: Int) -> Unit) {
 
-    val gameViewModel = viewModel<GameViewModel>()
+    val gameViewModel = viewModel<GameViewModel>(factory = GameViewModelFactory(difficulty))
 
     val pregunta: Pregunta? by gameViewModel.preguntaActual.collectAsStateWithLifecycle()
-    val numPregunta: Int by gameViewModel.numPregunta.collectAsStateWithLifecycle()
+    val ronda: Int by gameViewModel.ronda.collectAsStateWithLifecycle()
     val puntuacion: Int by gameViewModel.puntuacion.collectAsStateWithLifecycle()
     val opciones: List<String> by gameViewModel.opcionesMezcladas.collectAsStateWithLifecycle()
     val juegoTerminado: Boolean by gameViewModel.juegoTerminado.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        gameViewModel.iniciarPartida(difficulty)
+    }
+
     LaunchedEffect(juegoTerminado) {
         if (juegoTerminado) {
             navigateToResultScreen(puntuacion)
+            gameViewModel.reset()
         }
     }
 
@@ -49,7 +54,7 @@ fun GameScreen(difficulty: String, navigateToResultScreen: (score: Int) -> Unit)
         )
 
         Text(
-            text = "$numPregunta / 10", fontSize = 24.sp,
+            text = "$ronda / 10", fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 

@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun MenuScreen(navigateToPlayScreen: (difficulty: String) -> Unit) {
-    var difficulty by remember { mutableStateOf("easy") }
+fun MenuScreen(navigateToPlayScreen: (difficulty: Int) -> Unit) {
+    var difficulty by remember { mutableStateOf("1") }
 
     Column(
         Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,7 +41,7 @@ fun MenuScreen(navigateToPlayScreen: (difficulty: String) -> Unit) {
             value = difficulty, label = { Text("Dificultad") },
             onValueChange = { difficulty = it })
 
-        Button(onClick = { navigateToPlayScreen(difficulty) }) {
+        Button(onClick = { navigateToPlayScreen(difficulty.toInt()) }) {
             Text(text = "New Game")
         }
     }

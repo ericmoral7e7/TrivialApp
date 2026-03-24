@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class GameViewModel : ViewModel() {
+class GameViewModel(difficulty: Int) : ViewModel() {
     private val provider = PreguntasProvider()
 
     private var preguntasDeLaPartida: List<Pregunta> = emptyList()
@@ -19,8 +19,8 @@ class GameViewModel : ViewModel() {
     private val _opcionesMezcladas = MutableStateFlow<List<String>>(emptyList())
     val opcionesMezcladas: StateFlow<List<String>> = _opcionesMezcladas.asStateFlow()
 
-    private val _numPregunta = MutableStateFlow(1)
-    val numPregunta: StateFlow<Int> = _numPregunta.asStateFlow()
+    val _ronda = MutableStateFlow(1)
+    val ronda: StateFlow<Int> = _ronda.asStateFlow()
 
     private val _puntuacion = MutableStateFlow(0)
     val puntuacion: StateFlow<Int> = _puntuacion.asStateFlow()
@@ -29,20 +29,20 @@ class GameViewModel : ViewModel() {
     val juegoTerminado: StateFlow<Boolean> = _juegoTerminado.asStateFlow()
 
     init {
-        iniciarPartida(dificultad = 1)
+        iniciarPartida(dificultad = difficulty)
     }
 
     fun iniciarPartida(dificultad: Int) {
         preguntasDeLaPartida = provider.getPreguntasParaPartida(dificultad, preguntasTotales)
         _puntuacion.value = 0
-        _numPregunta.value = 1
+        _ronda.value = 1
         _juegoTerminado.value = false
 
         cargarPreguntaEnPantalla()
     }
 
     private fun cargarPreguntaEnPantalla() {
-        val indice = _numPregunta.value - 1
+        val indice = _ronda.value - 1
 
         // Comprobamos que no nos hayamos pasado del límite de preguntas
         if (indice < preguntasTotales) {
@@ -65,8 +65,32 @@ class GameViewModel : ViewModel() {
                 _puntuacion.value += 1
             }
 
-            _numPregunta.value += 1
+            _ronda.value += 1
             cargarPreguntaEnPantalla()
         }
     }
+
+    fun reset() {
+        _juegoTerminado.value = false
+    }
 }
+//
+//private val provider = PreguntasProvider()
+//
+//private var preguntasDeLaPartida: List<Pregunta> = emptyList()
+//val preguntasTotales = 10
+//
+//private val _preguntaActual = MutableStateFlow<Pregunta?>(null)
+//val preguntaActual: StateFlow<Pregunta?> = _preguntaActual.asStateFlow()
+//
+//private val _opcionesMezcladas = MutableStateFlow<List<String>>(emptyList())
+//val opcionesMezcladas: StateFlow<List<String>> = _opcionesMezcladas.asStateFlow()
+//
+//val _ronda = MutableStateFlow(1)
+//val ronda: StateFlow<Int> = _ronda.asStateFlow()
+//
+//private val _puntuacion = MutableStateFlow(0)
+//val puntuacion: StateFlow<Int> = _puntuacion.asStateFlow()
+//
+//private val _juegoTerminado = MutableStateFlow(false)
+//val juegoTerminado: StateFlow<Boolean> = _juegoTerminado.asStateFlow()

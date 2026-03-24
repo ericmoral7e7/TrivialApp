@@ -8,7 +8,7 @@ sealed class Routes: NavKey {
     @Serializable
     data object MenuScreen: Routes() // Objects quan no passem paràmetres
     @Serializable
-    data class GameScreen(val dificulty: String): Routes() // Class quan passem paràmetres
+    data class GameScreen(val dificulty: Int): Routes() // Class quan passem paràmetres
     @Serializable
     data class ResultScreen(val score: Int): Routes() // Class quan passem paràmetres
 }
